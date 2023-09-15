@@ -1,49 +1,29 @@
 [Unit]
-Description=Small description of the service
-After=network.target
+Description=rclone: Remote FUSE filesystem for cloud storage config %i
+Documentation=man:rclone(1)
+After=network-online.target
+Wants=network-online.target
+AssertPathIsDirectory=%h/cloud/
 
 [Service]
-Type=simple
-User=__APP__
-Group=__APP__
-WorkingDirectory=__INSTALL_DIR__/
-ExecStart=__INSTALL_DIR__/script
-StandardOutput=append:/var/log/__APP__/__APP__.log
-StandardError=inherit
-
-# Sandboxing options to harden security
-# Depending on specificities of your service/app, you may need to tweak these
-# .. but this should be a good baseline
-# Details for these options: https://www.freedesktop.org/software/systemd/man/systemd.exec.html
-NoNewPrivileges=yes
-PrivateTmp=yes
-PrivateDevices=yes
-RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
-RestrictNamespaces=yes
-RestrictRealtime=yes
-DevicePolicy=closed
-ProtectClock=yes
-ProtectHostname=yes
-ProtectProc=invisible
-ProtectSystem=full
-ProtectControlGroups=yes
-ProtectKernelModules=yes
-ProtectKernelTunables=yes
-LockPersonality=yes
-SystemCallArchitectures=native
-SystemCallFilter=~@clock @debug @module @mount @obsolete @reboot @setuid @swap @cpu-emulation @privileged
-
-# Denying access to capabilities that should not be relevant for webapps
-# Doc: https://man7.org/linux/man-pages/man7/capabilities.7.html
-CapabilityBoundingSet=~CAP_RAWIO CAP_MKNOD
-CapabilityBoundingSet=~CAP_AUDIT_CONTROL CAP_AUDIT_READ CAP_AUDIT_WRITE
-CapabilityBoundingSet=~CAP_SYS_BOOT CAP_SYS_TIME CAP_SYS_MODULE CAP_SYS_PACCT
-CapabilityBoundingSet=~CAP_LEASE CAP_LINUX_IMMUTABLE CAP_IPC_LOCK
-CapabilityBoundingSet=~CAP_BLOCK_SUSPEND CAP_WAKE_ALARM
-CapabilityBoundingSet=~CAP_SYS_TTY_CONFIG
-CapabilityBoundingSet=~CAP_MAC_ADMIN CAP_MAC_OVERRIDE
-CapabilityBoundingSet=~CAP_NET_ADMIN CAP_NET_BROADCAST CAP_NET_RAW
-CapabilityBoundingSet=~CAP_SYS_ADMIN CAP_SYS_PTRACE CAP_SYSLOG
+Type=notify
+ExecStartPre=/bin/mkdir -p %h/cloud/%i
+ExecStart= \
+  /usr/bin/rclone mount \
+    --config=%h/.config/rclone/rclone.conf \
+    --allow-non-empty \
+    --vfs-cache-mode writes \
+    --vfs-cache-max-size 100M \
+    --dir-cache-time 72h \
+    --vfs-read-chunk-size-limit 128M \
+    --vfs-read-chunk-size-limit off \
+    --log-level DEBUG \
+    --log-file /tmp/rclone-%i.log \
+    --umask 022 \
+    --allow-other \
+    %i: %h/cloud/%i
+ExecStop=/bin/fusermount -uz %h/cloud/%i
+ExecStop=/bin/rmdir %h/cloud/%i
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target

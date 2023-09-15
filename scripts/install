@@ -35,23 +35,21 @@ ynh_add_systemd_config
 
 yunohost service add $app --description="A short description of the app" --log="/var/log/$app/$app.log"
 
-# Use logrotate to manage application logfile(s)
-ynh_use_logrotate
-
-# Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="/var/log/nginx/${domain}-error.log" --failregex="Regex to match into the log for a failed login"
-
 #=================================================
 # APP INITIAL CONFIGURATION
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
-ynh_script_progression --message="Adding a configuration file..." --weight=1
+#ynh_script_progression --message="Adding a configuration file..." --weight=1
 
-ynh_add_config --template="some_config_file" --destination="$install_dir/some_config_file"
+#ynh_add_config --template="some_config_file" --destination="$install_dir/some_config_file"
 
-chmod 400 "$install_dir/some_config_file"
-chown $app:$app "$install_dir/some_config_file"
+#chmod 400 "$install_dir/some_config_file"
+#chown $app:$app "$install_dir/some_config_file"
+
+pushd $install_dir
+	./rclone rcd --rc-web-gui
+popd
 
 #=================================================
 # GENERIC FINALIZATION
