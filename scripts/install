@@ -48,10 +48,6 @@ yunohost service add gui --description="GUI for Rclone"
 #chmod 400 "$install_dir/some_config_file"
 #chown $app:$app "$install_dir/some_config_file"
 
-pushd $install_dir
-	./rclone rcd --rc-web-gui --rc-addr 127.0.0.1:$port --rc-user $admin --rc-pass $password
-popd
-
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
