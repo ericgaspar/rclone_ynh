@@ -7,9 +7,11 @@ AssertPathIsDirectory=%h/cloud/
 
 [Service]
 Type=notify
+User=__APP__
+Group=__APP__
 ExecStartPre=/bin/mkdir -p %h/cloud/%i
 ExecStart= \
-  /usr/bin/rclone mount \
+  __INSTALL_DIR__/rclone mount \
     --config=%h/.config/rclone/rclone.conf \
     --allow-non-empty \
     --vfs-cache-mode writes \
