@@ -32,10 +32,10 @@ ynh_add_nginx_config
 
 # Create a dedicated systemd config
 ynh_add_systemd_config
-ynh_add_systemd_config --service=gui --template="gui.service"
+ynh_add_systemd_config --service=$app_gui --template="$app_gui.service"
 
 yunohost service add $app --description="A short description of the app" --log="/var/log/$app/$app.log"
-yunohost service add gui --description="GUI for Rclone"
+yunohost service add $app_gui --description="GUI for Rclone"
 
 #=================================================
 # APP INITIAL CONFIGURATION
@@ -49,6 +49,9 @@ yunohost service add gui --description="GUI for Rclone"
 #chmod 400 "$install_dir/some_config_file"
 #chown $app:$app "$install_dir/some_config_file"
 
+
+--config=__INSTALL_DIR__/rclone.conf
+
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
@@ -58,7 +61,7 @@ ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start" --log_path="systemd"
-ynh_systemd_action --service_name=gui --action="start" --log_path="systemd"
+ynh_systemd_action --service_name=$app_gui --action="start" --log_path="systemd"
 
 #=================================================
 # END OF SCRIPT
