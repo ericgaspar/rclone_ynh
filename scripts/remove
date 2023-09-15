@@ -24,8 +24,14 @@ then
 	ynh_script_progression --message="Removing $app service integration..." --weight=1
 	yunohost service remove $app
 fi
-
+# Remove the service from the list of services known by YunoHost (added from `yunohost service add`)
+if ynh_exec_warn_less yunohost service status ${app}_ldap >/dev/null
+then
+	ynh_script_progression --message="Removing GUI service integration..." --weight=1
+	yunohost service remove gui
+fi
 ynh_remove_systemd_config
+ynh_remove_systemd_config --service=gui
 
 ynh_remove_nginx_config
 

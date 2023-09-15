@@ -34,6 +34,7 @@ ynh_add_nginx_config
 ynh_add_systemd_config
 
 yunohost service add $app --description="A short description of the app" --log="/var/log/$app/$app.log"
+yunohost service add gui --description="GUI for Rclone"
 
 #=================================================
 # APP INITIAL CONFIGURATION
@@ -48,7 +49,7 @@ yunohost service add $app --description="A short description of the app" --log="
 #chown $app:$app "$install_dir/some_config_file"
 
 pushd $install_dir
-	./rclone rcd --rc-web-gui
+	./rclone rcd --rc-web-gui --rc-addr 127.0.0.1:$port --rc-user $admin --rc-pass $password
 popd
 
 #=================================================
@@ -59,7 +60,8 @@ popd
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app --action="start" --log_path="systemd"
+ynh_systemd_action --service_name=gui --action="start" --log_path="systemd"
 
 #=================================================
 # END OF SCRIPT
