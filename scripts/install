@@ -31,9 +31,10 @@ ynh_script_progression --message="Adding system configurations related to $app..
 ynh_add_nginx_config
 
 # Create a dedicated systemd config
-ynh_add_systemd_config
+#ynh_add_systemd_config
+ynh_add_systemd_config --service=gui --template="gui.service"
 
-yunohost service add $app --description="A short description of the app" --log="/var/log/$app/$app.log"
+#yunohost service add $app --description="A short description of the app" --log="/var/log/$app/$app.log"
 yunohost service add gui --description="GUI for Rclone"
 
 #=================================================
@@ -56,7 +57,7 @@ yunohost service add gui --description="GUI for Rclone"
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path="systemd"
+#ynh_systemd_action --service_name=$app --action="start" --log_path="systemd"
 ynh_systemd_action --service_name=gui --action="start" --log_path="systemd"
 
 #=================================================
