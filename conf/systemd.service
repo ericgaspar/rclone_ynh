@@ -12,7 +12,7 @@ Group=__APP__
 ExecStartPre=/bin/mkdir -p %h/cloud/%i
 ExecStart= \
   __INSTALL_DIR__/rclone mount \
-    --config=%h/.config/rclone/rclone.conf \
+    --config=__INSTALL_DIR__/rclone.conf \
     --allow-non-empty \
     --vfs-cache-mode writes \
     --vfs-cache-max-size 100M \
